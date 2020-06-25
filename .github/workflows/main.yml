@@ -163,6 +163,8 @@ jobs:
           - name: Windows MSVC
             os: windows-latest
             compiler: cl
+            deploy: true	
+            deploy-name: windows
 
           - name: Windows GCC
             os: windows-latest
