@@ -92,6 +92,9 @@ int32_t mz_zip_set_data_descriptor(void *handle, uint8_t data_descriptor);
 int32_t mz_zip_get_stream(void *handle, void **stream);
 /* Get a pointer to the stream used to open */
 
+int32_t mz_zip_get_cd_start_pos(void* handle, int64_t *cd_start_pos);
+/* Get central directory start position for current stream */
+
 int32_t mz_zip_set_cd_stream(void *handle, int64_t cd_start_pos, void *cd_stream);
 /* Sets the stream to use for reading the central dir */
 
@@ -167,6 +170,9 @@ int64_t mz_zip_get_entry(void *handle);
 
 int32_t mz_zip_goto_entry(void *handle, int64_t cd_pos);
 /* Go to specified entry in the zip file */
+
+int32_t mz_zip_goto_file_entry(void *handle, int64_t cd_pos, const mz_zip_file *file_info);
+/* Go to specified entry in the zip file using file information */
 
 int32_t mz_zip_goto_first_entry(void *handle);
 /* Go to the first entry in the zip file */
