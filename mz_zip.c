@@ -1595,6 +1595,14 @@ int32_t mz_zip_get_stream(void *handle, void **stream) {
     return MZ_OK;
 }
 
+int32_t mz_zip_get_cd_start_pos(void *handle, int64_t *cd_start_pos) {
+    mz_zip* zip = (mz_zip *)handle;
+    if (zip == NULL || cd_start_pos == NULL)
+        return MZ_PARAM_ERROR;
+    *cd_start_pos = zip->cd_start_pos;
+    return MZ_OK;
+}
+
 int32_t mz_zip_set_cd_stream(void *handle, int64_t cd_start_pos, void *cd_stream) {
     mz_zip *zip = (mz_zip *)handle;
     if (zip == NULL || cd_stream == NULL)
@@ -2358,6 +2366,21 @@ int32_t mz_zip_goto_entry(void *handle, int64_t cd_pos) {
     zip->cd_current_pos = cd_pos;
 
     return mz_zip_goto_next_entry_int(handle);
+}
+
+int32_t mz_zip_goto_file_entry(void *handle, int64_t cd_pos, const mz_zip_file *file_info) {
+    mz_zip *zip = (mz_zip *)handle;
+ 
+    if (zip == NULL || file_info == NULL)
+        return MZ_PARAM_ERROR;
+
+    if (cd_pos < zip->cd_start_pos || cd_pos > zip->cd_start_pos + zip->cd_size)
+        return MZ_PARAM_ERROR;
+
+    zip->cd_current_pos = cd_pos;
+    zip->file_info = *file_info;
+    zip->entry_scanned = 1;
+    return MZ_OK;
 }
 
 int32_t mz_zip_goto_first_entry(void *handle) {
