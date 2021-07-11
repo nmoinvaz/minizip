@@ -14,9 +14,13 @@
 #include "mz_crypt.h"
 
 #if defined(HAVE_ZLIB)
-#  include "zlib.h"
-#  if defined(ZLIBNG_VERNUM) && !defined(ZLIB_COMPAT)
-#    include "zlib-ng.h"
+#  if !defined(ZLIB_COMPAT)
+#   include <zlib-ng.h>
+#   define ZPREFIX(x) zng_ ## x
+    typedef zng_stream zlib_stream;
+#  else
+#   include <zlib.h>
+    typedef z_stream zlib_stream;
 #  endif
 #elif defined(HAVE_LZMA)
 #  include "lzma.h"

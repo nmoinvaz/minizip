@@ -6,6 +6,7 @@
 #***************************************************************************
 
 cmake_minimum_required(VERSION 3.13)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 message(STATUS "Using CMake version ${CMAKE_VERSION}")
 
@@ -198,11 +199,21 @@ endif()
 if(MZ_ZLIB)
     # Check if zlib is present
     if(NOT MZ_FORCE_FETCH_LIBS)
+        find_package(ZLIBNG QUIET)
         find_package(ZLIB QUIET)
         set(ZLIB_VERSION ${ZLIB_VERSION_STRING})
     endif()
 
-    if(ZLIB_FOUND AND NOT MZ_FORCE_FETCH_LIBS)
+    if(ZLIBNG_FOUND AND NOT MZ_FORCE_FETCH_LIBS)
+        message(STATUS "Using ZLIBNG")
+
+        list(APPEND MINIZIP_INC ${ZLIBNG_INCLUDE_DIRS})
+        list(APPEND MINIZIP_LIB ${ZLIBNG_LIBRARIES})
+        list(APPEND MINIZIP_LBD ${ZLIBNG_LIBRARY_DIRS})
+
+        set(PC_PRIVATE_LIBS " -lz-ng")
+        set(ZLIB_COMPAT OFF)
+    elseif(ZLIB_FOUND AND NOT MZ_FORCE_FETCH_LIBS)
         message(STATUS "Using ZLIB ${ZLIB_VERSION}")
 
         list(APPEND MINIZIP_INC ${ZLIB_INCLUDE_DIRS})
@@ -210,6 +221,7 @@ if(MZ_ZLIB)
         list(APPEND MINIZIP_LBD ${ZLIB_LIBRARY_DIRS})
 
         set(PC_PRIVATE_LIBS " -lz")
+        set(ZLIB_COMPAT ON)
     elseif(MZ_FETCH_LIBS)
         clone_repo(zlib https://github.com/madler/zlib)
 
@@ -225,6 +237,7 @@ if(MZ_ZLIB)
         else()
             list(APPEND MINIZIP_DEP zlib)
         endif()
+        set(ZLIB_COMPAT ON)
     else()
         message(STATUS "ZLIB library not found")
 
@@ -232,7 +245,11 @@ if(MZ_ZLIB)
     endif()
 
     if(MZ_ZLIB)
-        list(APPEND MINIZIP_DEP_PKG ZLIB)
+        if(ZLIBNG_FOUND)
+            list(APPEND MINIZIP_DEP_PKG ZLIBNG)
+        elseif(ZLIB_FOUND)
+            list(APPEND MINIZIP_DEP_PKG ZLIB)
+        endif()
         list(APPEND MINIZIP_DEF -DHAVE_ZLIB)
         if(ZLIB_COMPAT)
             list(APPEND MINIZIP_DEF -DZLIB_COMPAT)
