@@ -1,7 +1,7 @@
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=@CMAKE_INSTALL_PREFIX@
-libdir=@INSTALL_LIB_DIR@
-sharedlibdir=@INSTALL_LIB_DIR@
+libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+sharedlibdir=@CMAKE_INSTALL_FULL_LIBDIR@
 includedir=@INSTALL_INC_DIR@
 
 Name: @PROJECT_NAME@
